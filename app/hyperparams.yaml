@@ -1,0 +1,187 @@
+
+############################################################################
+# Model: TTS with attention-based mechanism
+# Tokens: g2p + possitional embeddings
+# losses: MSE & BCE
+# Training: LJSpeech
+# ############################################################################
+
+###################################
+# Experiment Parameters and setup #
+###################################
+seed: 1234
+__set_seed: !apply:torch.manual_seed [!ref <seed>]
+
+# Folder set up
+# output_folder: !ref .\\results\\tts\\<seed>
+# save_folder: !ref <output_folder>\\save
+
+output_folder: !ref ./results/<seed>
+save_folder: !ref <output_folder>/save
+
+
+################################
+# Model Parameters and model   #
+################################
+# Input parameters
+lexicon:
+    - AA
+    - AE
+    - AH
+    - AO
+    - AW
+    - AY
+    - B
+    - CH
+    - D
+    - DH
+    - EH
+    - ER
+    - EY
+    - F
+    - G
+    - HH
+    - IH
+    - IY
+    - JH
+    - K
+    - L
+    - M
+    - N
+    - NG
+    - OW
+    - OY
+    - P
+    - R
+    - S
+    - SH
+    - T
+    - TH
+    - UH
+    - UW
+    - V
+    - W
+    - Y
+    - Z
+    - ZH
+
+input_encoder: !new:speechbrain.dataio.encoder.TextEncoder
+
+
+
+################################
+# Model Parameters and model   #
+# Transformer Parameters
+################################
+d_model: 512
+nhead: 8
+num_encoder_layers: 3
+num_decoder_layers: 3
+dim_feedforward: 512
+dropout: 0.1
+
+
+# Decoder parameters
+# The number of frames in the target per encoder step
+n_frames_per_step: 1
+decoder_rnn_dim: 1024
+prenet_dim: 256
+max_decoder_steps: 1000
+gate_threshold: 0.5
+p_decoder_dropout: 0.1
+decoder_no_early_stopping: False
+
+blank_index: 0 # This special tokes is for padding
+
+
+# Masks
+lookahead_mask: !name:speechbrain.lobes.models.transformer.Transformer.get_lookahead_mask
+padding_mask: !name:speechbrain.lobes.models.transformer.Transformer.get_key_padding_mask
+
+
+################################
+# CNN 3-layers Prenet          #
+################################
+# Encoder Prenet
+encoder_prenet: !new:module_classes.CNNPrenet
+
+# Decoder Prenet
+decoder_prenet: !new:module_classes.CNNDecoderPrenet
+
+################################
+# Positional Encodings         #
+################################
+
+#encoder
+pos_emb_enc: !new:module_classes.ScaledPositionalEncoding
+    input_size: !ref <d_model>
+    max_len: 5000
+
+#decoder
+pos_emb_dec: !new:module_classes.ScaledPositionalEncoding
+    input_size: !ref <d_model>
+    max_len: 5000
+
+
+################################
+# S2S Transfomer               #
+################################
+
+Seq2SeqTransformer: !new:torch.nn.Transformer
+    d_model: !ref <d_model>
+    nhead: !ref <nhead>
+    num_encoder_layers: !ref <num_encoder_layers>
+    num_decoder_layers: !ref <num_decoder_layers>
+    dim_feedforward: !ref <dim_feedforward>
+    dropout: !ref <dropout>
+    batch_first: True
+
+
+################################
+# CNN 5-layers PostNet         #
+################################
+
+decoder_postnet: !new:speechbrain.lobes.models.Tacotron2.Postnet
+
+
+# Linear transformation on the top of the decoder.
+stop_lin: !new:speechbrain.nnet.linear.Linear
+    input_size: !ref <d_model>
+    n_neurons: 1
+
+
+# Linear transformation on the top of the decoder.
+mel_lin: !new:speechbrain.nnet.linear.Linear
+    input_size: !ref <d_model>
+    n_neurons: 80
+
+modules:
+    encoder_prenet: !ref <encoder_prenet>
+    pos_emb_enc: !ref <pos_emb_enc>
+    decoder_prenet: !ref <decoder_prenet>
+    pos_emb_dec: !ref <pos_emb_dec>
+    Seq2SeqTransformer: !ref <Seq2SeqTransformer>
+    mel_lin: !ref <mel_lin>
+    stop_lin: !ref <stop_lin>
+    decoder_postnet: !ref <decoder_postnet>
+
+
+model: !new:torch.nn.ModuleList
+    - [!ref <encoder_prenet>,!ref <pos_emb_enc>,
+       !ref <decoder_prenet>, !ref <pos_emb_dec>, !ref <Seq2SeqTransformer>,
+       !ref <mel_lin>, !ref <stop_lin>,  !ref <decoder_postnet>]
+
+
+pretrained_model_path: ./model.ckpt
+
+# The pretrainer allows a mapping between pretrained files and instances that
+# are declared in the yaml. E.g here, we will download the file model.ckpt
+# and it will be loaded into "model" which is pointing to the <model> defined
+# before.
+
+pretrainer: !new:speechbrain.utils.parameter_transfer.Pretrainer
+   collect_in: !ref <save_folder>
+   loadables:
+      model: !ref <model>
+   paths:
+      model: !ref <pretrained_model_path>
