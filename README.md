@@ -15,7 +15,7 @@ Natural-sounding speech generation is a difficult task to achieve due to many re
 ## Transformer Architecture
 
 <p>
-    <img src="/images/transformer.JPG" width="300" height="700" />
+    <img src="/images/transformer.JPG" width="300" height="600" />
 </p>
 
 ## Dataset
@@ -25,7 +25,7 @@ The LJSpeech dataset (2.6 GB) consists of 13,100 short audio clips of a single s
 ## Implemented System Architecture - Neural Speech Synthesis with Transformer Network
 
 <p>
-    <img src="/images/TTS.JPG" width="300" height="700" />
+    <img src="/images/TTS.JPG" width="300" height="600" />
 </p>
 
 ## Modules Implemented
@@ -84,7 +84,7 @@ The complete text-to-speech system basically converts the given input text into 
 ## Results
 
 <p>
-    <img src="/images/CAPTURE.JPG" width="700" height="300" />
+    <img src="/images/Capture.JPG" width="700" height="300" />
 </p>
 
 
