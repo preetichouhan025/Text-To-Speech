@@ -1,5 +1,7 @@
 # Text-To-Speech (Neural Speech Synthesis with Transformer Network)
 
+This repository provides the necessary tools for Text-to-Speech (TTS) with SpeechBrain using a Transformer pretrained on LJSpeech
+
 ## Introduction
 
 Text-to-speech (TTS) is the task of creating natural-like speech or audio from entered text, where speech can be generated for multiple speakers and in multiple languages. There have been many models based on conventional ways like RNNs but the recent sequence-to-sequence architecture of Transformers has made the task much more efficient.
@@ -95,3 +97,24 @@ Despite the improvements and advancements in TTS tasks because of Transformers-b
 Considering the limited computation, the model wasn't trained on enough encoders and decoders and with fewer epochs. And it is due to this reason that even though the loss is less, the speech generated isn't the targeted output. If the system was trained on more parameters then the overall loss could have been improved along with the performance of the model.
 
 The next step in future improvements of this task should be concentrating on enhancing the speaker adaption capabilities, developing lightweight models for deployment on small devices like mobile phones, and developing the computational devices required for the aforementioned large models.
+
+
+## **About SpeechBrain**
+- Website: https://speechbrain.github.io/
+- Code: https://github.com/speechbrain/speechbrain/
+- HuggingFace: https://huggingface.co/speechbrain/
+
+## **Citing SpeechBrain**
+Please, cite SpeechBrain if you use it for your research or business.
+
+```bibtex
+@misc{speechbrain,
+  title={{SpeechBrain}: A General-Purpose Speech Toolkit},
+  author={Mirco Ravanelli and Titouan Parcollet and Peter Plantinga and Aku Rouhe and Samuele Cornell and Loren Lugosch and Cem Subakan and Nauman Dawalatabad and Abdelwahab Heba and Jianyuan Zhong and Ju-Chieh Chou and Sung-Lin Yeh and Szu-Wei Fu and Chien-Feng Liao and Elena Rastorgueva and François Grondin and William Aris and Hwidong Na and Yan Gao and Renato De Mori and Yoshua Bengio},
+  year={2021},
+  eprint={2106.04624},
+  archivePrefix={arXiv},
+  primaryClass={eess.AS},
+  note={arXiv:2106.04624}
+}
+```
