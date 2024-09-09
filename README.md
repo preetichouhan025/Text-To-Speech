@@ -1,5 +1,7 @@
 # Text-To-Speech (Neural Speech Synthesis with Transformer Network)
 
+Implemented the Transformer TTS model described in this paper - https://arxiv.org/pdf/1809.08895.pdf
+
 This repository provides the necessary tools for Text-to-Speech (TTS) with SpeechBrain using a Transformer pretrained on LJSpeech
 
 ## Introduction
